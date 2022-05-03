@@ -1,0 +1,70 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3372846 */
+  src: url('iconfont.eot?t=1651498565954'); /* IE9 */
+  src: url('iconfont.eot?t=1651498565954#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('iconfont.woff2?t=1651498565954') format('woff2'),
+       url('iconfont.woff?t=1651498565954') format('woff'),
+       url('iconfont.ttf?t=1651498565954') format('truetype'),
+       url('iconfont.svg?t=1651498565954#iconfont') format('svg');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-file1:before {
+  content: "\e635";
+}
+
+.icon-file_download:before {
+  content: "\e685";
+}
+
+.icon-folder:before {
+  content: "\e690";
+}
+
+.icon-file_zip:before {
+  content: "\e697";
+}
+
+.icon-file_excel:before {
+  content: "\e698";
+}
+
+.icon-file_ppt:before {
+  content: "\e699";
+}
+
+.icon-file_word:before {
+  content: "\e69a";
+}
+
+.icon-file_pdf:before {
+  content: "\e69b";
+}
+
+.icon-file_music:before {
+  content: "\e69c";
+}
+
+.icon-file_video:before {
+  content: "\e69d";
+}
+
+.icon-file_img:before {
+  content: "\e69e";
+}
+
+.icon-file_txt:before {
+  content: "\e6a4";
+}
+
+.icon-file_exe:before {
+  content: "\e6a5";
+}
+
