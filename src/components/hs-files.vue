@@ -26,7 +26,17 @@
         </li>
       </ul>
       <div class="list-content">
-        <hs-breadcrumb :data="breadcrumbList" @on-item="onItem"></hs-breadcrumb>
+        <div class="list-nav">
+          <hs-breadcrumb
+            :data="breadcrumbList"
+            @on-item="onItem"></hs-breadcrumb>
+          <el-input
+            clearable
+            v-model="inputName"
+            placeholder="请输入内容"
+            suffix-icon="el-icon-search"
+            @input="onInput"></el-input>
+        </div>
         <ul class="list-page">
           <li
             v-for="item in fileItem"
@@ -59,6 +69,7 @@
 <script>
 import HsBreadcrumb from './hs-breadcrumb.vue';
 import { fileTypes } from './file-type-list';
+// import { debounce } from '@/utils/limit.js';
 export default {
   name: 'HsFiles',
   components: { HsBreadcrumb },
@@ -67,7 +78,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    isMultiple: {
+    multiple: {
       type: Boolean,
       default: false,
     },
@@ -88,6 +99,8 @@ export default {
       breadcrumbList: [],
       fileItem: [],
       fileTypes,
+      inputName: '',
+      oldData: [],
     };
   },
   mounted() {
@@ -111,6 +124,7 @@ export default {
         ...i,
         selected: false,
       }));
+      this.$emit('on-selected', []);
     },
     // 单击面包屑
     onItem(item) {
@@ -118,6 +132,7 @@ export default {
         ...i,
         selected: false,
       }));
+      this.$emit('on-selected', []);
     },
     // 进入文件夹
     clickItem(item) {
@@ -127,10 +142,20 @@ export default {
           ...i,
           selected: false,
         }));
+        this.$emit('on-selected', []);
       } else {
         item.selected = !item.selected;
-        const selectedItem = this.fileItem.filter(i => i.selected);
-        this.$emit('on-selected', selectedItem);
+        if (this.multiple) {
+          const selectedItem = this.fileItem.filter(i => i.selected);
+          this.$emit('on-selected', selectedItem);
+        } else {
+          this.fileItem.forEach(element => {
+            if (element.name !== item.name && element.selected) {
+              element.selected = false;
+            }
+          });
+          this.$emit('on-selected', [item]);
+        }
       }
     },
     // 进入类型文件夹
@@ -140,6 +165,7 @@ export default {
         selected: false,
       }));
       this.breadcrumbList = [item];
+      this.$emit('on-selected', []);
     },
     // 获取类型图标
     getTypeIcon(item) {
@@ -155,6 +181,58 @@ export default {
         }
       }
       return iconName || { ...fileTypes.fileDefault };
+    },
+    // 全选
+    selectAll() {
+      if (this.multiple) {
+        this.fileItem.forEach(element => {
+          !element.child && (element.selected = true);
+        });
+        const selectedItem = this.fileItem.filter(i => i.selected);
+        this.$emit('on-selected', selectedItem);
+      }
+    },
+    // 取消选择
+    noSelectAll() {
+      this.fileItem.forEach(element => {
+        element.selected = false;
+      });
+      this.$emit('on-selected', []);
+    },
+    // 搜索
+    searchName(name) {
+      if (!this.oldData.length) {
+        this.oldData = this.fileItem;
+      }
+      const searchName = name.toLowerCase();
+      const searchList = [];
+      this.searchAll(
+        this.oldData.length ? this.oldData : this.fileItem,
+        searchList,
+        searchName,
+      );
+      this.fileItem = searchList;
+    },
+    // 递归搜索
+    searchAll(list, searchList, searchName) {
+      list.forEach(element => {
+        const foundName = element.name.toLowerCase();
+        if (foundName.includes(searchName)) {
+          searchList.push(element);
+        }
+        if (element.child) {
+          this.searchAll(element.child, searchList, searchName);
+        }
+      });
+    },
+    // 输入框搜索
+    onInput(val) {
+      if (val) {
+        this.searchName(val);
+      } else {
+        this.fileItem = this.oldData;
+        this.oldData = [];
+      }
     },
   },
 };
@@ -195,6 +273,14 @@ export default {
   }
   .breadcrumb {
     margin-left: 12px;
+  }
+  .list-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .el-input {
+      width: 200px;
+    }
   }
   .list-page {
     li {
